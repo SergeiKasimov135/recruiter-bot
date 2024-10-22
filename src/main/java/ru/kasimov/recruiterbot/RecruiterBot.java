@@ -2,6 +2,8 @@ package ru.kasimov.recruiterbot;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -25,6 +27,9 @@ import static ru.kasimov.recruiterbot.constants.MessageConstants.*;
 public class RecruiterBot extends TelegramLongPollingBot {
 
     private final BotConfig botConfig;
+
+    private static final Logger logger = LoggerFactory.getLogger(RecruiterBot.class);
+
     private final VacancyHandler vacancyHandler = new VacancyHandler();
     private final QuestionHandler questionHandler = new QuestionHandler();
     private final HrChatHandler hrChatHandler = new HrChatHandler();
@@ -32,6 +37,7 @@ public class RecruiterBot extends TelegramLongPollingBot {
 
     @Getter
     private final long hrChatId = 0; // specify hrChatId
+
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage()) {
@@ -171,8 +177,9 @@ public class RecruiterBot extends TelegramLongPollingBot {
 
         try {
             execute(message);
+            logger.info("Message sent successfully to chat {}: {}", chatId, text);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            logger.error("Error sending message to chat {}: {}", chatId, e.getMessage());
         }
     }
 
@@ -184,8 +191,9 @@ public class RecruiterBot extends TelegramLongPollingBot {
 
         try {
             execute(message);
+            logger.info("Message with keyboard sent successfully to chat {}: {}", chatId, text);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            logger.error("Error sending message with keyboard to chat {}: {}", chatId, e.getMessage());
         }
     }
 
